@@ -1,0 +1,87 @@
+.c { 
+    position:absolute;
+    border:0;
+    padding:0;
+    margin:0;
+    overflow:hidden;
+    display:block;
+}
+
+.t { 
+    position:absolute;
+    white-space:pre;
+    font-size:1px;
+    transform-origin:0% 100%;
+    -ms-transform-origin:0% 100%;
+    -webkit-transform-origin:0% 100%;
+    unicode-bidi:bidi-override;
+    -moz-font-feature-settings:"liga" 0;
+}
+
+.t:after { 
+    content: '';
+}
+
+.t:before { 
+    content: '';
+    display: inline-block;
+}
+
+.t span { 
+    position:relative;
+    unicode-bidi:bidi-override; 
+}
+
+._ {     
+    display: inline-block;
+    color: transparent;
+    z-index: -1;
+}
+
+div.c, td.c, th.c, div.tbw {
+    pointer-events: none; 
+}
+
+div.c>*, td.c>*, th.c>* {
+    pointer-events: auto; padding-right: 100px;
+}
+
+table.s {
+    display: block; position: absolute;
+}
+
+table.s > th, table.s > td {
+    display: block;
+}
+
+table.s > tr {
+    display: contents;
+}
+
+#page-container {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+
+.pc { 
+    position:absolute;
+    border:0;
+    padding:0;
+    margin:0;
+    top:0;
+    left:0;
+    overflow:hidden;
+    display:block;
+    transform-origin:0% 0%;
+    -ms-transform-origin:0% 0%;
+    -webkit-transform-origin:0% 0%;
+  }
+
+.pf {
+    position: relative;
+}
+
+.ixbrl-table-handle {
+    display: none;
+}
