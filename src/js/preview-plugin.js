@@ -14,6 +14,7 @@
 
 import progress from "../misc/progress.html";
 import stylesString from "../misc/styles.css";
+import { unionRect } from "./rect";
 
 export class PdfPreviewPlugin {
     constructor(iv) {
@@ -145,6 +146,8 @@ export class PdfPreviewPlugin {
     remapElement(node, elementMap, styles, deepClone, factory) {
         if (!elementMap.has(node)) {
             let child = node.cloneNode(deepClone);
+            if (child.style && child.style.getPropertyValue('content-visibility'))
+                child.style.removeProperty('content-visibility');
             this.remapClassList(node, ["ff", "fs", "ls", "fc", "ws", "m", "x", "y", "z", "w", "h", "_", "gs"], styles);
             factory.call(this, child);
             elementMap.set(node, child);
@@ -186,16 +189,54 @@ export class PdfPreviewPlugin {
             pageContainer.outerHTML, styles, fontFaces));        
         doc.close();
     }
+    
+    compactTextblock(doc, padding = [5, 10]) {
+        var [padLeft, padTop] = padding;
+        var coveredRect = null;
+        doc.querySelectorAll(".pf").forEach(pf => {
+            pf.querySelectorAll(".t").forEach(el => {
+                if (coveredRect === null) {
+                    coveredRect = el.getBoundingClientRect();
+                } else {
+                    coveredRect = unionRect(coveredRect, el.getBoundingClientRect());
+                }
+            });
+        });
+        doc.querySelectorAll(".pf").forEach(pf => {            
+            var rect = null;
+            pf.querySelectorAll(".t").forEach(el => {
+                if (rect === null) {
+                    rect = el.getBoundingClientRect();
+                } else {
+                    rect = unionRect(rect, el.getBoundingClientRect());
+                }
+            });
+            let left = pf.getBoundingClientRect().left;             
+            let top = pf.getBoundingClientRect().top;            
+            let x = left - coveredRect.left;
+            let y = top - rect.top;
+            let pc = pf.querySelector(".pc");            
+            pc.style.transform = `translate(${x + padLeft}px, ${y + padTop}px)`;            
+            let height = parseFloat(getComputedStyle(pf).getPropertyValue("height"));
+            pf.style.height = `${height + y}px`;
+        });
+    }
 
     async extendDisplayTextblock(doc, fact) {             
         if (this.isPDF) {
             const idList = [fact.id].concat(this.iv.viewer.itemContinuationMap[fact.id] || []);
             if (idList.length > 1) {
+                doc.open();
                 doc.write(progress);
-                setTimeout(() => this.renderTextblock(doc, idList), 100);
+                doc.close();
+                setTimeout(() => {
+                    this.renderTextblock(doc, idList);
+                    this.compactTextblock(doc);
+                }, 100);
             } else {
                 this.renderTextblock(doc, idList);
-            }
+                this.compactTextblock(doc);
+            }            
             
         } else {
             doc.open();
