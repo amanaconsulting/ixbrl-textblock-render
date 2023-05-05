@@ -157,7 +157,7 @@ export class PdfPreviewPlugin {
     }
 
     renderTextblock(doc, idList) {
-        self = this;
+        const self = this;
         var styles = {};
         var fontFaces = [];
         var fragment = doc.createDocumentFragment();
