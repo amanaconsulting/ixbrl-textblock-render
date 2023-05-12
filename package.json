@@ -5,7 +5,8 @@
   "main": "src/js/preview-plugin.js",
   "scripts": {
     "dev": "webpack --config webpack.dev.js",
-    "prod": "webpack --config webpack.prod.js"
+    "prod": "webpack --config webpack.prod.js",
+    "extract-css": "webpack --config webpack.extract-css.js"
   },
   "stylelint": {
     "customSyntax": "postcss-less",
@@ -39,6 +40,7 @@
     "less": "^3.11.1",
     "less-loader": "^6.0.0",
     "lunr": "^2.3.8",
+    "mini-css-extract-plugin": "^2.7.5",
     "moment": "^2.24.0",
     "postcss-less": "^6.0.0",
     "source-map-loader": "^4.0.1",
