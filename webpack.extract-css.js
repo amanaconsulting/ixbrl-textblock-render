@@ -23,15 +23,21 @@ module.exports = env => mergeWithRules({
         {
             test: /\.less$/,
             use: [ 
-                MiniCssExtractPlugin.loader,                      
-                'css-loader'
+                MiniCssExtractPlugin.loader,
+                { 
+                  loader: 'css-loader', 
+                  options: { 
+                    url: false,
+                    sourceMap: true                    
+                  } 
+                }
             ]
         }
     ]
   },
   plugins: [
     new MiniCssExtractPlugin({
-        filename: './[name].css'
+        filename: './viewer.css'
     })
   ]
 });
