@@ -38,7 +38,10 @@ export class PdfPreviewPlugin {
                 }
             }
             for (const style in styles) {
-                str += styles[style] + "\n";
+                var styleValue = styles[style];
+                if (styleValue !== null) {
+                    str += styleValue + "\n";
+                }
             }
             str += "</style>";
             return str;
@@ -156,9 +159,15 @@ export class PdfPreviewPlugin {
         return elementMap.get(node);
     }
 
+    getInheritedStyles() {
+        return {
+            "table.table-highlight" : null
+        };
+    }
+
     renderTextblock(doc, idList) {
         const self = this;
-        var styles = {};
+        var styles = this.getInheritedStyles();
         var fontFaces = [];
         var fragment = doc.createDocumentFragment();
         var elementMap = new Map();
