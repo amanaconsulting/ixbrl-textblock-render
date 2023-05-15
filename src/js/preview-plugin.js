@@ -19,19 +19,18 @@ import { unionRect } from "./rect";
 export class PdfPreviewPlugin {
     constructor(iv) {
         this.iv = iv;
-        this.isPDF = false;
         this.documents = [];
     }
 
     async preProcessiXBRL(body, docIndex) {
-        this.isPDF = this.iv.isPDF;
         this.documents.push(body.ownerDocument);
     }
 
     htmlCreateStyles(styles, fontFaces) {
         if (styles && Object.keys(styles).length > 0) {
             let str = "<style type='text/css'>\n";
-            str += stylesString + "\n";
+            if (this.iv.isPDF)
+                str += stylesString + "\n";
             if (fontFaces) {
                 for (const fontFace of fontFaces) {
                     str += fontFace + "\n";
@@ -231,8 +230,25 @@ export class PdfPreviewPlugin {
         });
     }
 
+    defaultRenderWithTableBorders(doc, innertHTML) {
+        doc.open();
+        var styles = this.getInheritedStyles();
+        this.extractStyles(styles, this.documents[0]);
+        doc.write(this.htmlWrapString(innertHTML, styles));
+        doc.close();
+        doc.querySelectorAll("table").forEach(table => {
+            table.classList.add("table-highlight");
+        });
+    }
+
+    defaultRender(doc, innertHTML) {
+        doc.open();
+        doc.write(this.htmlWrapString(innertHTML));
+        doc.close();
+    }
+
     async extendDisplayTextblock(doc, fact) {             
-        if (this.isPDF) {
+        if (this.iv.isPDF) {
             const idList = [fact.id].concat(this.iv.viewer.itemContinuationMap[fact.id] || []);
             if (idList.length > 1) {
                 doc.open();
@@ -245,12 +261,11 @@ export class PdfPreviewPlugin {
             } else {
                 this.renderTextblock(doc, idList);
                 this.compactTextblock(doc);
-            }            
-            
+            }                        
+        } else if (this.iv.viewer.showTablesBorder) {
+            this.defaultRenderWithTableBorders(doc, fact.value());            
         } else {
-            doc.open();
-            doc.write(this.htmlWrapString(fact.value()));     
-            doc.close();
+            this.defaultRender(doc, fact.value());
         }        
     }
 }

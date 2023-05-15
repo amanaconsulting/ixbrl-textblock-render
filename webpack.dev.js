@@ -4,7 +4,7 @@ const path = require('path');
 
 module.exports = env => merge(common, {
   mode: 'development',
-  devtool: 'eval-source-map',
+  devtool: 'inline-source-map',
   watch: false,
   output: {
     filename: 'ixbrlviewer.js',
