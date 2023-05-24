@@ -221,7 +221,9 @@ export class PdfPreviewPlugin {
             });
             let left = pf.getBoundingClientRect().left;             
             let top = pf.getBoundingClientRect().top;            
-            let x = left - coveredRect.left;
+            let x = left;
+            if (coveredRect.left > 0)
+                x =- coveredRect.left;
             let y = top - rect.top;
             let pc = pf.querySelector(".pc");            
             pc.style.transform = `translate(${x + padLeft}px, ${y + padTop}px)`;            

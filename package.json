@@ -1,6 +1,6 @@
 {
   "name": "ixbrl-preview-plugin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AMANA plugin for rendering PDF text blocks",
   "main": "src/js/preview-plugin.js",
   "scripts": {
