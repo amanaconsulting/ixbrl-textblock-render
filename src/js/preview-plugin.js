@@ -26,11 +26,24 @@ export class PdfPreviewPlugin {
         this.documents.push(body.ownerDocument);
     }
 
-    htmlCreateStyles(styles, fontFaces) {
+    detectRTL(doc) {
+        const html = doc.getElementById("page-container") || doc.querySelector("html");        
+        const dir = html.getAttribute("dir");
+        if (dir === "rtl") {
+            return true;
+        }
+        return false;
+    }
+
+    htmlCreateStyles(styles, fontFaces, rtl) {
         if (styles && Object.keys(styles).length > 0) {
             let str = "<style type='text/css'>\n";
-            if (this.iv.isPDF)
+            if (this.iv.isPDF) {
                 str += stylesString + "\n";
+                if (rtl) {
+                    str = str.replaceAll("bidi-override", "normal");
+                }
+            }
             if (fontFaces) {
                 for (const fontFace of fontFaces) {
                     str += fontFace + "\n";
@@ -48,10 +61,10 @@ export class PdfPreviewPlugin {
         return "";
     }
 
-    htmlWrapString(content, styles, fontFaces) {
+    htmlWrapString(content, styles, fontFaces, rtl = false) {
         const str =
             "<!DOCTYPE html><html><head><title></title>"
-            + this.htmlCreateStyles(styles, fontFaces)
+            + this.htmlCreateStyles(styles, fontFaces, rtl)
             +"</head><body>" 
             + content 
             + "</body></html>";
@@ -105,6 +118,7 @@ export class PdfPreviewPlugin {
             className.startsWith("ff") ||
             className.startsWith("fs") ||
             className.startsWith("gs") ||
+            className.startsWith("sc") ||
             className.startsWith("ls"))
             return className.substring(0, 2);
         if (className.startsWith("_") ||
@@ -150,7 +164,7 @@ export class PdfPreviewPlugin {
             let child = node.cloneNode(deepClone);
             if (child.style && child.style.getPropertyValue('content-visibility'))
                 child.style.removeProperty('content-visibility');
-            this.remapClassList(node, ["ff", "fs", "ls", "fc", "ws", "m", "x", "y", "z", "w", "h", "_", "gs"], styles);
+            this.remapClassList(node, ["ff", "fs", "ls", "fc", "ws", "sc", "m", "x", "y", "z", "w", "h", "_", "gs"], styles);
             factory.call(this, child);
             elementMap.set(node, child);
             return child;
@@ -186,15 +200,17 @@ export class PdfPreviewPlugin {
         }
         this.extractStyles(styles, this.documents[0]);
         this.extractFonts(styles, fontFaces, this.documents[0]);
+        const rtl = this.detectRTL(this.documents[0]);
         let pageContainer = doc.createElement('div');
-        pageContainer.setAttribute('id', 'page-container');        
+        pageContainer.setAttribute('id', 'page-container');
+        if (rtl) pageContainer.setAttribute('dir', 'rtl');        
         let zoomContainer = doc.createElement('div');
         zoomContainer.setAttribute('id', 'zoom-container');
         zoomContainer.appendChild(fragment);
         pageContainer.appendChild(zoomContainer);
         doc.open();
         doc.write(this.htmlWrapString(
-            pageContainer.outerHTML, styles, fontFaces));        
+            pageContainer.outerHTML, styles, fontFaces, rtl));        
         doc.close();
     }
     
