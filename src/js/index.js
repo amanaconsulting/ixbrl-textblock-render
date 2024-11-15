@@ -3,7 +3,7 @@ import { iXBRLViewer } from "ixbrl-viewer";
 import { PdfPreviewPlugin } from "./preview-plugin";
 
 $(function () {
-    var iv = new iXBRLViewer({ continuationElementLimit: -1,  showValidationWarningOnStart: false });
+    var iv = new iXBRLViewer();
     var ivp = new PdfPreviewPlugin(iv);
     iv.registerPlugin(ivp);
     iv.load();

@@ -13,29 +13,39 @@ module.exports = {
                 {
                     test: /\.html$/,
                     use: [ { 
-                        loader: "html-loader",
-                        options: {
-                            minimize: true,
-                            removeAttributeQuotes: false,
-                            keepClosingSlash: true
-                        }
-                    }]
+                      loader: "html-loader",
+                      options: {
+                          esModule: false,
+                          minimize: {
+                              removeAttributeQuotes: false,
+                              keepClosingSlash: true
+                          }
+                      }
+                  }]
                 },
                 {
-                    test: /\.less$/,
-                    use: [ { 
-                        loader: "less-loader",
-                        options: {
-                            lessOptions: {
-                                math: "parens-division"
-                            }
-                        }
-                    }]
-                },
-                {
-                  test: /\.(css)$/,
-                  use: ['to-string-loader', 'css-loader'],
-                }
+                  test: /\.less$/,
+                  use: [
+                      {
+                          loader: "css-loader",
+                          options: {
+                              esModule: false
+                          }
+                      },
+                      {
+                          loader: "less-loader",
+                          options: {
+                              lessOptions: {
+                                  math: "parens-division"
+                              }
+                          }
+                      }
+                  ]
+              },
+              {
+                test: /\.(css)$/,
+                use: ['to-string-loader', 'css-loader'],
+              }
             ]
 
 

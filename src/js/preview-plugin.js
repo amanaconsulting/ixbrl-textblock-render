@@ -267,7 +267,8 @@ export class PdfPreviewPlugin {
 
     async extendDisplayTextblock(doc, fact) {             
         if (this.iv.isPDF) {
-            const idList = [fact.id].concat(this.iv.viewer.itemContinuationMap[fact.id] || []);
+            const idList = [fact.vuid].concat(this.iv.viewer.itemContinuationMap[fact.vuid] || [])
+                .map(id => id.replace(/^\d+-/,""));
             if (idList.length > 1) {
                 doc.open();
                 doc.write(progress);
